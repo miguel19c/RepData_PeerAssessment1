@@ -1,25 +1,96 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+author: "Miguel Sánchez-Ovando"
+date: "27 de marzo de 2018"
+output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-## Loading and preprocessing the data
+#Loading and preprocessing the data
+First of all, We loaded the dataset. This dataset has 17568samples and contains three columns, steps, day and interval.
 
-
-
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
+```{r loading_data}
+data_original<-read.csv('activity.csv')
+data_wna<-data_original[complete.cases(data_original),] #data without NA values
+head(data_wna)
+```
 
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+#What is mean total number of steps taken per day?
+To answer this question we use the dataset without Na values.
+
+```{r Q1, echo=FALSE}
+library(ggplot2)
+sum_steps=aggregate(data_wna["steps"], by=data_wna["date"], sum) #Number of steps taken per day
+hist(sum_steps$steps,main='Histogram of the sum of steps per day',xlab='total steps')
+mean(sum_steps$steps,na.rm=T)
+median(sum_steps$steps,na.rm=T)
+```
+As we can see, the mean total number of steps taken per day is 10766.19.
+#What is the average daily activity pattern?
+
+```{r Q2, echo=FALSE}
+mean_time=aggregate(data_wna["steps"], by=data_wna["interval"], mean) #Number of steps taken per day
+plot(mean_time,type='l')
+mean_time[mean_time$steps==max(mean_time$steps),] #interval with maximun number of steps
+```
+We point out that before the interval 500 the person has null activity, while between the interval 800 to 1000 presents the highest activity of the day to later regularize and give 30 to 100 steps until the interval 2000 in which decreases its activity to zero.
+#Imputing missing values
+
+To replace the NA values we will use the average of the values corresponding to the time interval in which the NA is located. That is, if a Na is in the interval 5 then we will substitute it by the average of all the values in the dates under study that are in the interval 5.Remember that the number of steps is a whole number, for this reason we use the rounded average value  previously obtained.
+
+```{r Q3, echo=FALSE}
+dim(data_original)[1]-dim(data_wna)[1] #Number of Nas in the dataset.
+data_complete<-data_original
+
+for( i in 1:dim(data_complete)[1])
+{ 
+        if(is.na(data_complete[i,1]))
+        {
+                data_complete[i,1]<-round(mean_time[mean_time$interval==data_complete$interval[i],2])
+        }
+        
+}
+#
+```
+The total number of NA in the dataset is 2304.
+
+#What is the impact of imputing missing data on the estimates of the total daily number of steps?
+```{r Q4, echo=FALSE}
+sum_stepsc=aggregate(data_complete["steps"], by=data_complete["date"], sum) #Number of steps taken per day
+hist(sum_stepsc$steps,main='Histogram of the sum of steps per day',xlab='total steps')
+mean(sum_stepsc$steps)
+median(sum_stepsc$steps)
+#
+```
+The effect of missing data is small because they only represent about 13% of the total data. As we can see, the mean total number of steps taken per day, without missing data, is 10766.19 and with imputing missing data is 10765.64.
+
+#Are there differences in activity patterns between weekdays and weekends?
+According to the graphs shown below, there is a difference between the behavior of the person between weekdays and weekends. Weekdays show great activity of steps near the interval 800 to 1000 and then it is regularized. While the weekends show great activity of steps between the interval 800 to 2000.
+
+```{r Q5, echo=FALSE}
+weekend=c('sábado','domingo') 
+for( i in 1:dim(data_complete)[1])
+{
+    data_complete$week[i]<-ifelse( (weekdays(as.Date(data_complete$date[i]))%in%weekend),0,1 )
+    
+}
+# week variable take the value 1 if the day is a week day and 0 if not.
+
+data_week=subset(data_complete,data_complete$week==1)
+data_weekend=subset(data_complete,data_complete$week==0)
+
+mean_week=aggregate(data_week["steps"], by=data_week["interval"], mean) 
+mean_weekend=aggregate(data_weekend["steps"], by=data_weekend["interval"], mean)
+
+#
+par(mfrow=c(2,1))
+plot(mean_week,type='l',main='mean of steps by week days')
+plot(mean_weekend,type='l',main='mean of steps by weekend days')
+
+
+```
