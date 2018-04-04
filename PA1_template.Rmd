@@ -32,6 +32,7 @@ mean(sum_steps$steps,na.rm=T)
 median(sum_steps$steps,na.rm=T)
 ```
 As we can see, the mean total number of steps taken per day is 10766.19.
+
 #What is the average daily activity pattern?
 
 ```{r Q2, echo=TRUE}
@@ -71,6 +72,7 @@ median(sum_stepsc$steps)
 The effect of missing data is small because they only represent about 13% of the total data. As we can see, the mean total number of steps taken per day, without missing data, is 10766.19 and with imputing missing data is 10765.64.
 
 #Are there differences in activity patterns between weekdays and weekends?
+
 According to the graphs shown below, there is a difference between the behavior of the person between weekdays and weekends. Weekdays show great activity of steps near the interval 800 to 1000 and then it is regularized. While the weekends show great activity of steps between the interval 800 to 2000.
 
 ```{r Q5, echo=TRUE}
