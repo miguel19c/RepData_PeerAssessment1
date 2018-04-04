@@ -6,7 +6,8 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,fig.path = "images/"
+)
 ```
 
 #Loading and preprocessing the data
@@ -23,7 +24,7 @@ head(data_wna)
 #What is mean total number of steps taken per day?
 To answer this question we use the dataset without Na values.
 
-```{r Q1, echo=FALSE}
+```{r Q1, echo=TRUE}
 library(ggplot2)
 sum_steps=aggregate(data_wna["steps"], by=data_wna["date"], sum) #Number of steps taken per day
 hist(sum_steps$steps,main='Histogram of the sum of steps per day',xlab='total steps')
@@ -33,7 +34,7 @@ median(sum_steps$steps,na.rm=T)
 As we can see, the mean total number of steps taken per day is 10766.19.
 #What is the average daily activity pattern?
 
-```{r Q2, echo=FALSE}
+```{r Q2, echo=TRUE}
 mean_time=aggregate(data_wna["steps"], by=data_wna["interval"], mean) #Number of steps taken per day
 plot(mean_time,type='l')
 mean_time[mean_time$steps==max(mean_time$steps),] #interval with maximun number of steps
@@ -43,7 +44,7 @@ We point out that before the interval 500 the person has null activity, while be
 
 To replace the NA values we will use the average of the values corresponding to the time interval in which the NA is located. That is, if a Na is in the interval 5 then we will substitute it by the average of all the values in the dates under study that are in the interval 5.Remember that the number of steps is a whole number, for this reason we use the rounded average value  previously obtained.
 
-```{r Q3, echo=FALSE}
+```{r Q3, echo=TRUE}
 dim(data_original)[1]-dim(data_wna)[1] #Number of Nas in the dataset.
 data_complete<-data_original
 
@@ -60,7 +61,7 @@ for( i in 1:dim(data_complete)[1])
 The total number of NA in the dataset is 2304.
 
 #What is the impact of imputing missing data on the estimates of the total daily number of steps?
-```{r Q4, echo=FALSE}
+```{r Q4, echo=TRUE}
 sum_stepsc=aggregate(data_complete["steps"], by=data_complete["date"], sum) #Number of steps taken per day
 hist(sum_stepsc$steps,main='Histogram of the sum of steps per day',xlab='total steps')
 mean(sum_stepsc$steps)
@@ -72,7 +73,7 @@ The effect of missing data is small because they only represent about 13% of the
 #Are there differences in activity patterns between weekdays and weekends?
 According to the graphs shown below, there is a difference between the behavior of the person between weekdays and weekends. Weekdays show great activity of steps near the interval 800 to 1000 and then it is regularized. While the weekends show great activity of steps between the interval 800 to 2000.
 
-```{r Q5, echo=FALSE}
+```{r Q5, echo=TRUE}
 weekend=c('sábado','domingo') 
 for( i in 1:dim(data_complete)[1])
 {
